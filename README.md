@@ -6,9 +6,11 @@
 
 	bash
 	coreutils
-	wget
 	make
+	php (>= 5.4)
 	rsync
+	wget
+	xz
 	TODO
 
 方能使用。
