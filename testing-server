@@ -1,0 +1,31 @@
+#!/bin/bash
+
+set -e
+
+prog="$0"
+S_arg=localhost:8000
+while getopts "S:" opt; do
+	case $opt in
+	S)
+		S_arg=$OPTARG
+		;;
+	esac
+done
+shift $((OPTIND-1))
+
+cd "`dirname "$prog"`"
+for cmd in php55 php54 php
+do
+	if command -v php55 >/dev/null; then
+		phpcmd=$cmd
+		break
+	fi
+done
+
+if [ -z "$phpcmd" ]; then
+	echo 'Cannot find php' >&2
+	exit 1
+fi
+
+make siteroot
+"$phpcmd" -S "$S_arg" -t siteroot/su "dev/php-built-in-server.php"

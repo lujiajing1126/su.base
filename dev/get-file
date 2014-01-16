@@ -1,0 +1,20 @@
+#!/bin/bash
+
+. "$(dirname "$0")/../config"
+
+case "$DEVURL" in
+http://*|https://*|ftp://*)
+	arg=()
+	for loc in "$@"
+	do
+		arg+="${DEVURL}${loc}"
+	done
+	wget "${arg[@]}"
+	;;
+file://*)
+	for loc in "$@"
+	do
+		cp "${DEVURL#file://}$loc" .
+	done
+esac
+

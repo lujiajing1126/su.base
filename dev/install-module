@@ -1,0 +1,31 @@
+#!/bin/bash
+
+set -e
+
+siteroot="$(dirname "$0")/../siteroot"
+general_rsync_filter="$(dirname "$0")/general-rsync-filter"
+PURPOSE=${PURPOSE:deployment}
+
+mkdir -p siteroot
+
+for modules in "$@"; do
+    for part in su su.prog su.var; do
+        pdir="$modules/$part"
+        if [ -e "$pdir" ]; then
+            if [ -e "$pdir/Makefile" ]; then
+                make -C "$pdir" "$PURPOSE"
+            fi
+            if [ -e "$pdir/rsync-filter" ]; then
+                rsync -tlr -f ". $pdir/rsync-filter" \
+                    -f ". $general_rsync_filter" \
+                    "$pdir/" "$siteroot/$part/"
+            else
+                rsync -tlr \
+                    -f ". $general_rsync_filter" \
+                    "$pdir/" "$siteroot/$part/"
+            fi
+        fi
+    done
+done
+
+# vim: ts=4 sw=4 ai et

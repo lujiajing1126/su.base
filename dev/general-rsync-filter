@@ -1,0 +1,7 @@
+H .git
+H .gitignore
+H .DS_Store
+H *~
+H Makefile
+H .*.swp
+H *.bak

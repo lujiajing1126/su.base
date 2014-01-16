@@ -1,0 +1,7 @@
+/config
+/modules
+/siteroot
+.*.swp
+.DS_Store
+*~
+*.bak
