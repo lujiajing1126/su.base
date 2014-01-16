@@ -12,12 +12,12 @@ PURPOSE=${PURPOSE:deployment}
 mkdir -p siteroot
 
 for modules in "$@"; do
+    if [ -e "$modules/Makefile" ]; then
+        make -C "$modules" "$PURPOSE"
+    fi
     for part in doc prog var; do
         pdir="$modules/site.$part"
         if [ -e "$pdir" ]; then
-            if [ -e "$pdir/Makefile" ]; then
-                make -C "$pdir" "$PURPOSE"
-            fi
             if [ -e "$pdir/rsync-filter" ]; then
                 rsync -tlr -f ". $pdir/rsync-filter" \
                     -f ". $general_rsync_filter" \
