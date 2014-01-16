@@ -18,7 +18,7 @@ shift $((OPTIND-1))
 cd "`dirname "$prog"`"
 for cmd in php55 php54 php
 do
-	if command -v php55 >/dev/null; then
+	if command -v "$cmd" >/dev/null; then
 		phpcmd=$cmd
 		break
 	fi
