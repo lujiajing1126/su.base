@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 . "$(dirname "$0")/../config"
 
 case "$DEVURL" in
@@ -7,14 +9,25 @@ http://*|https://*|ftp://*)
 	arg=()
 	for loc in "$@"
 	do
-		arg+="${DEVURL}${loc}"
+		arg+=("${DEVURL}${loc}")
 	done
-	wget "${arg[@]}"
+	if [[ "$DEVURL" =~ ://.*@ ]]; then
+		wget -N --ask-password "${arg[@]}"
+	else
+		wget -N "${arg[@]}"
+	fi
 	;;
 file://*)
 	for loc in "$@"
 	do
-		cp "${DEVURL#file://}$loc" .
+		src="${DEVURL#file://}$loc" 
+		if ! [ -e "$src" ]; then
+			echo "$src does not exist" >&2
+			exit 1
+		fi
+		if ! [ -e "$(basename "$src")" ] || [ "$(($(stat -f'%m' "$src") > $(stat -f'%m' $(basename "$src"))))" = 1 ]; then
+			cp "$src" .
+		fi
 	done
 esac
 

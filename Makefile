@@ -12,7 +12,7 @@ update-siteroot:
 	fi
 	dev/install-module base `find modules -maxdepth 1 -mindepth 1 -type d`
 
-update-data:
+update-data: config
 	-mkdir modules
 	cd modules && ../dev/get-file \
 		share/tar/conf.tar.xz \
