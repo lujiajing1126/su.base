@@ -2,15 +2,18 @@
 
 set -e
 
+. "$(dirname "$0")/../config"
+
 siteroot="$(dirname "$0")/../siteroot"
+siteref="$siteroot/$SITENAME"
 general_rsync_filter="$(dirname "$0")/general-rsync-filter"
 PURPOSE=${PURPOSE:deployment}
 
 mkdir -p siteroot
 
 for modules in "$@"; do
-    for part in su su.prog su.var; do
-        pdir="$modules/$part"
+    for part in doc prog var; do
+        pdir="$modules/site.$part"
         if [ -e "$pdir" ]; then
             if [ -e "$pdir/Makefile" ]; then
                 make -C "$pdir" "$PURPOSE"
@@ -18,11 +21,11 @@ for modules in "$@"; do
             if [ -e "$pdir/rsync-filter" ]; then
                 rsync -tlr -f ". $pdir/rsync-filter" \
                     -f ". $general_rsync_filter" \
-                    "$pdir/" "$siteroot/$part/"
+                    "$pdir/" "${siteref}.${part}/"
             else
                 rsync -tlr \
                     -f ". $general_rsync_filter" \
-                    "$pdir/" "$siteroot/$part/"
+                    "$pdir/" "${siteref}.${part}/"
             fi
         fi
     done
