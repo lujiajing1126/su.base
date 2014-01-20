@@ -1,0 +1,41 @@
+#!/bin/bash
+#author: megrez
+#version: 201301201121
+
+set -e
+
+echo "geting arguments..."
+while getopts "u:" optname; do
+	case "$optname" in
+		"u")
+			user="$OPTARG"
+			;;
+	esac
+done
+
+echo "checking for php..."
+
+for cmd in php55 php54 php; do
+	if command -v $cmd >/dev/null; then
+		phpcmd=$cmd
+		break
+	fi
+done
+
+if [ -z "$phpcmd" ]; then
+	echo "no php found..\n"
+	exit 1
+fi
+
+echo "copying config file..."
+
+user=${user-"default"}
+
+if [ -e "./config" ]; then
+	echo "file already exsited!"
+	rm config
+fi
+cp config-default config
+sed "s/yourusername/${user}/g" config
+
+echo "configure done"
