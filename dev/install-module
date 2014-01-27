@@ -7,7 +7,18 @@ set -e
 siteroot="$(dirname "$0")/../siteroot"
 siteref="$siteroot/$SITENAME"
 general_rsync_filter="$(dirname "$0")/general-rsync-filter"
-PURPOSE=${PURPOSE:deployment}
+PURPOSE=${PURPOSE:-deployment}
+rsync_filter_for_purpose="$(dirname "$0")/rsync-filter-for-${PURPOSE}"
+
+case "$TERM" in
+xterm|xterm-*)
+    echo $'\E[1m'"Install modules in ${PURPOSE} mode"$'\E[0m'
+    ;;
+*)
+    echo "Install modules in ${PURPOSE} mode"
+    ;;
+esac
+echo "  (Choose mode with PURPOSE environment variable)"
 
 mkdir -p siteroot
 
@@ -18,15 +29,16 @@ for modules in "$@"; do
     for part in doc prog var; do
         pdir="$modules/site.$part"
         if [ -e "$pdir" ]; then
-            if [ -e "$pdir/rsync-filter" ]; then
-                rsync -tlr -f ". $pdir/rsync-filter" \
-                    -f ". $general_rsync_filter" \
-                    "$pdir/" "${siteref}.${part}/"
-            else
-                rsync -tlr \
-                    -f ". $general_rsync_filter" \
-                    "$pdir/" "${siteref}.${part}/"
+            args=(-tlr)
+            if [ -e "$rsync_filter_for_purpose" ]; then
+                args+=(-f ". $rsync_filter_for_purpose")
             fi
+            if [ -e "$pdir/rsync-filter" ]; then
+                args=(-f ". $pdir/rsync-filter")
+            fi
+            args+=(-f ". $general_rsync_filter"\
+                    "$pdir/" "${siteref}.${part}/")
+            rsync "${args[@]}"
         fi
     done
 done

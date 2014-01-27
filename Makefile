@@ -14,6 +14,9 @@ update-siteroot:
 	fi
 	dev/install-module base `find modules -maxdepth 1 -mindepth 1 -type d`
 
+clean-siteroot:
+	rm -rf siteroot/*
+
 update-data: config
 	-mkdir modules
 	cd modules && ../dev/get-file \
