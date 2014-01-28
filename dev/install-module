@@ -2,44 +2,84 @@
 
 set -e
 
+# configurable variables
+siteroot="$(dirname "$0")/../siteroot"
+general_rsync_filter="$(dirname "$0")/general-rsync-filter"
+purpose=deployment
+parts=(doc prog var)
+
+# load configuration
 . "$(dirname "$0")/../config"
 
-siteroot="$(dirname "$0")/../siteroot"
-siteref="$siteroot/$SITENAME"
-general_rsync_filter="$(dirname "$0")/general-rsync-filter"
-PURPOSE=${PURPOSE:-deployment}
-rsync_filter_for_purpose="$(dirname "$0")/rsync-filter-for-${PURPOSE}"
+# parse options
+while getopts "cp:" opt; do
+    case "$opt" in
+    c)
+        parts+=(conf)
+        ;;
+    p)
+        purpose="${OPTARG}"
+        ;;
+    esac
+done
+shift "$((OPTIND-1))"
 
+# prepare automatic variables
+siteref="$siteroot/$SITENAME"
+rsync_filter_for_purpose="$(dirname "$0")/rsync-filter-for-${purpose}"
+
+# echo mode
 case "$TERM" in
 xterm|xterm-*)
-    echo $'\E[1m'"Install modules in ${PURPOSE} mode"$'\E[0m'
+    echo $'\E[1m'"Install modules in "$'\E[31m'"${purpose}"$'\E[0;1m'" mode"$'\E[0m'
+    echo $'\E[2m'"  (You may choose mode with -p <purpose> option)"$'\E[0m'
+    echo $'\E[1m'"These parts will be installed: "$'\E[31m'"${parts[@]}"$'\E[0m'
+    echo $'\E[2m'"  (If you want to install \"conf\" part, use -c option)"$'\E[0m'
     ;;
 *)
-    echo "Install modules in ${PURPOSE} mode"
+    echo "Install modules in ${purpose} mode"
+    echo "  (You may choose mode with -p <purpose> option)"
+    echo "These parts will be installed:" "${parts[@]}"
+    echo "  (If you want to install \"conf\" part, use -c option)"
     ;;
 esac
-echo "  (Choose mode with PURPOSE environment variable)"
 
+# install modules
 mkdir -p siteroot
 
 for modules in "$@"; do
     if [ -e "$modules/Makefile" ]; then
-        make -C "$modules" "$PURPOSE"
+        make -C "$modules" "$purpose"
     fi
-    for part in doc prog var; do
+
+    for part in "${parts[@]}"; do
         pdir="$modules/site.$part"
-        if [ -e "$pdir" ]; then
-            args=(-tlr)
-            if [ -e "$rsync_filter_for_purpose" ]; then
-                args+=(-f ". $rsync_filter_for_purpose")
-            fi
-            if [ -e "$pdir/rsync-filter" ]; then
-                args=(-f ". $pdir/rsync-filter")
-            fi
-            args+=(-f ". $general_rsync_filter"\
-                    "$pdir/" "${siteref}.${part}/")
-            rsync "${args[@]}"
+
+        # all parts are optional
+        if ! [ -e "$pdir" ]; then
+            continue
         fi
+
+        args=(-tr)
+
+        case "`uname -s`" in
+        CYGWIN*)
+            args+=(-L)
+            ;;
+        *)
+            args+=(-l)
+            ;;
+        esac
+
+        if [ -e "$rsync_filter_for_purpose" ]; then
+            args+=(-f ". $rsync_filter_for_purpose")
+        fi
+        if [ -e "$pdir/rsync-filter" ]; then
+            args=(-f ". $pdir/rsync-filter")
+        fi
+        args+=(-f ". $general_rsync_filter"\
+                "$pdir" "${siteref}.${part}/")
+        rsync "${args[@]}"
     done
 done
 
