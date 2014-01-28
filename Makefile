@@ -23,7 +23,7 @@ update-siteroot-testing:
 	PURPOSE=testing $(MAKE) update-siteroot
 
 clean-siteroot:
-	rm -rf siteroot/*
+	rm -rf siteroot
 
 update-data: config
 	-mkdir modules

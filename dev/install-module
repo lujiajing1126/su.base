@@ -28,6 +28,10 @@ shift "$((OPTIND-1))"
 siteref="$siteroot/$SITENAME"
 rsync_filter_for_purpose="$(dirname "$0")/rsync-filter-for-${purpose}"
 
+if ! [ -e "$siteroot" ]; then
+    parts+=(conf)
+fi
+
 # echo mode
 case "$TERM" in
 xterm|xterm-*)
@@ -45,7 +49,6 @@ xterm|xterm-*)
 esac
 
 # install modules
-mkdir -p siteroot
 
 for modules in "$@"; do
     if [ -e "$modules/Makefile" ]; then
@@ -59,6 +62,8 @@ for modules in "$@"; do
         if ! [ -e "$pdir" ]; then
             continue
         fi
+
+        mkdir -p  "${siteref}.${part}/"
 
         args=(-tr)
 
