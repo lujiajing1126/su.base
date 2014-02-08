@@ -83,7 +83,7 @@ for modules in "$@"; do
             args=(-f ". $pdir/rsync-filter")
         fi
         args+=(-f ". $general_rsync_filter"\
-                "$pdir" "${siteref}.${part}/")
+                "$pdir/" "${siteref}.${part}/")
         rsync "${args[@]}"
     done
 done
