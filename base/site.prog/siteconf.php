@@ -10,6 +10,7 @@ else
 
 $_SITE['var'] = $_SITE['ref'] . '.var';
 $_SITE['prog'] = $_SITE['ref'] . '.prog';
+$_SITE['conf'] = $_SITE['ref'] . '.conf';
 
 $_SITE['clientlib'] = $_SITE['doc'] . '/lib';
 
