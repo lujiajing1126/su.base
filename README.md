@@ -37,6 +37,8 @@ Windows 用户需要特别注意，php 是这些软件中唯一不能通过 Cygw
 
 在浏览器里打开 <http://localhost:8000/> 即可看到网站。
 
+应注意经常检查 `base.git` 的更新，每次更新后都调用 `make update-data`
+
 ## 文件说明
 
 ### config
@@ -45,19 +47,19 @@ TODO
 
 ### siteroot
 
-网站的数据目录。
+网站的数据目录。在调用 `make update-siteroot` 后自动生成。
 
-其中包括至少三个子目录： `网站名.doc`, `网站名.prog`, `网站名.var`。这三个文件夹分别由 `模块/site.doc`, `模块/site.prog`, `模块/site.var` 拼合而成。脚本会安装 `modules/` 下的所有模块, 以及 `base` 模块。
+其中将会包括至少三个子目录： `网站名.doc`, `网站名.prog`, `网站名.var`, `网站名.conf`。这三个文件夹分别由 `模块/site.doc`, `模块/site.prog`, `模块/site.var` , `模块/site.conf` 拼合而成。脚本会安装 `modules/` 下的所有模块, 以及 `base` 模块。
 
-其中 `网站名.doc` 对应于网站的文档根，其中文档不应被修改、能够网站被访问者直接浏览； `网站名.prog` 包含不应被修改、不应被访问者浏览的文件； `网站名.var` 包含需要被修改但不应被浏览的文件。
+其中 `网站名.doc` 对应于网站的文档根，它包含文档不应被修改、能够被网站访问者直接浏览，它们构成网站内容； `网站名.prog` 包含不应被修改、不应被访问者浏览的文件（比如服务端的函数库、尚未渲染的页面模版），它们的作用是为网站程序提供支持； `网站名.var` 包含需要被修改但不应被浏览的文件，比如数据文件； `网站名.conf` 与 `网站名.prog` 功能相同，但是不会被 `make update-siteroot` 自动更新，用于储存默认的配置文件。
 
 其中“网站名”为 `config` 文件中的 `SITENAME`。
 
 ### modules & base
 
-`modules` 文件夹中的每个文件夹都是一个模块；`base` 自身是一个模块。
+`modules` 文件夹中的每个文件夹都是一个模块；而 `base` 文件夹自身是一个模块。
 
-模块的结构如下：
+每个模块的结构如下：
 
 	module-directory/
 	  |
@@ -67,6 +69,8 @@ TODO
 	  |- site.prog/ (可选)
 	     |- rsync-filter (可选)
 	  |- site.var/ (可选)
+	     |- rsync-filter (可选)
+	  |- site.conf/ (可选)
 	     |- rsync-filter (可选)
 
 其中 `rsync-filter` 为 `rsync` 读取的过滤器，它们可由 `Makefile` 生成；除了每个模块自定义的过滤器意外，所有文件都会被 `dev/general-rsync-filter` 过滤。
@@ -91,13 +95,25 @@ TODO
 
 当 `modules/` 内容修改过后，可以调用：
 
-	make update-siteroot
+	make update-siteroot # 以正式部署 (deployment) 模式更新 siteroot
+
+或者：
+
+	make update-siteroot-testing # 以测试 (testing) 模式更新 siteroot
+
+正是部署模式下，所有 `TEST` 开头的文件都不会被部署（参看 `dev/rsync-filter-for-deployment`）。
 
 更新 `siteroot` 文件夹。
 
 ### testing-server
 
+默认参数运行后可在浏览器中打开 <http://localhost:8000/> 看到 `siteroot/网站名.doc` 下的页面。
+
 TODO
+
+## 环境
+
+所有此框架下的 php 页面都可使用 `$_SITE` 变量，具体含义参看 `base/site.prog/siteconf.php`。
 
 ## 故障排除
 
