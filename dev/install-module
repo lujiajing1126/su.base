@@ -52,7 +52,7 @@ esac
 
 for modules in "$@"; do
     if [ -e "$modules/Makefile" ]; then
-        make -C "$modules" "$purpose"
+        make -C "$modules" "mode-$purpose"
     fi
 
     for part in "${parts[@]}"; do
@@ -65,7 +65,7 @@ for modules in "$@"; do
 
         mkdir -p  "${siteref}.${part}/"
 
-        args=(-tr)
+        args=(-tpr)
 
         case "`uname -s`" in
         CYGWIN*)
