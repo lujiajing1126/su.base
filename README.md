@@ -73,9 +73,9 @@ TODO
 	  |- site.conf/ (可选)
 	     |- rsync-filter (可选)
 
-其中 `rsync-filter` 为 `rsync` 读取的过滤器，它们可由 `Makefile` 生成；除了每个模块自定义的过滤器意外，所有文件都会被 `dev/general-rsync-filter` 过滤。
+其中 `rsync-filter` 为 `rsync` 读取的过滤器，它们可由 `Makefile` 生成；除了每个模块自定义的过滤器以外，所有文件都会被 `dev/general-rsync-filter` 过滤。
 
-`Makefile` 应当至少提供两格目标：`deployment`、`development`，分别用于部署和调试时的网站构造。
+`Makefile` 应当至少提供两个目标：`deployment`、`development`，分别用于部署和调试时的网站构造。
 
 ### Makefile
 
@@ -101,7 +101,7 @@ TODO
 
 	make update-siteroot-testing # 以测试 (testing) 模式更新 siteroot
 
-正是部署模式下，所有 `TEST` 开头的文件都不会被部署（参看 `dev/rsync-filter-for-deployment`）。
+正式部署模式下，所有 `TEST` 开头的文件都不会被部署（参看 `dev/rsync-filter-for-deployment`）。
 
 更新 `siteroot` 文件夹。
 
