@@ -12,15 +12,15 @@ update-siteroot:
 	   ! [ -e modules/lib ]; then \
 		$(MAKE) update-data; \
 	fi
-ifeq ($(PURPOSE),testing)
-	dev/install-module -p testing \
+ifeq ($(PURPOSE),development)
+	dev/install-module -p development \
 		base `find modules -maxdepth 1 -mindepth 1 -type d`
 else
 	dev/install-module base `find modules -maxdepth 1 -mindepth 1 -type d`
 endif
 
-update-siteroot-testing:
-	PURPOSE=testing $(MAKE) update-siteroot
+update-siteroot-development:
+	PURPOSE=development $(MAKE) update-siteroot
 
 clean-siteroot:
 	rm -rf siteroot
@@ -52,4 +52,4 @@ pack-data:
 	(cd modules; tar -c data) | xz > tar/$(DATESTRING)/data.tar.xz
 	(cd modules; tar -c lib) | xz > tar/$(DATESTRING)/lib.tar.xz
 
-.PHONY: update-siteroot update-data pack-data update-siteroot-testing
+.PHONY: update-siteroot update-data pack-data update-siteroot-development
