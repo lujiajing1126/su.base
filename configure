@@ -27,15 +27,13 @@ if [ -z "$phpcmd" ]; then
 	exit 1
 fi
 
-echo "copying config file..."
+echo "touching config file..."
 
 user=${user-"default"}
 
-if [ -e "./config" ]; then
-	echo "file already exsited!"
-	rm config
-fi
+touch config
+
 cp config-default config
-sed "s/yourusername/${user}/g" config
+sed "s/yourusername/${user}/g" config-default > config
 
 echo "configure done"

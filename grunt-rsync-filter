@@ -1,0 +1,4 @@
+- .git*
+- *.scss
+H node_modules
+H .gitignore
