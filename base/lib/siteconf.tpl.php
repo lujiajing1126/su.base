@@ -1,5 +1,5 @@
 <?php
-define(BUILD_MODE, "---BUILD_MODE---");
+define("BUILD_MODE", "---BUILD_MODE---");
 
 $_SITE = array();
 
