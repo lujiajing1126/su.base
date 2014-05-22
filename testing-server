@@ -30,4 +30,4 @@ if [ -z "$phpcmd" ]; then
 fi
 
 make siteroot
-"$phpcmd" -S "$S_arg" -t "siteroot/${SITENAME}.doc" "dev/php-built-in-server.php"
+"$phpcmd" -S "$S_arg" -t "siteroot/${SITENAME}.doc" `pwd`"/dev/php-built-in-server.php"
